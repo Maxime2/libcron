@@ -39,12 +39,12 @@ namespace libcron
     {
         // First, check for "convenience scheduling" using @yearly, @annually,
         // @monthly, @weekly, @daily or @hourly.
-        std::string tmp = std::regex_replace(cron_expression, std::regex("@yearly"), "0 0 1 1 *");
-        tmp = std::regex_replace(tmp, std::regex("@annually"), "0 0 1 1 *");
-        tmp = std::regex_replace(tmp, std::regex("@monthly"), "0 0 1 * *");
-        tmp = std::regex_replace(tmp, std::regex("@weekly"), "0 0 * * 0");
-        tmp = std::regex_replace(tmp, std::regex("@daily"), "0 0 * * *");
-        const std::string expression = std::regex_replace(tmp, std::regex("@hourly"), "0 * * * *");
+        std::string tmp = std::regex_replace(cron_expression, std::regex("@yearly"), "0 0 0 1 1 *");
+        tmp = std::regex_replace(tmp, std::regex("@annually"), "0 0 0 1 1 *");
+        tmp = std::regex_replace(tmp, std::regex("@monthly"), "0 0 0 1 * *");
+        tmp = std::regex_replace(tmp, std::regex("@weekly"), "0 0 0 * * 0");
+        tmp = std::regex_replace(tmp, std::regex("@daily"), "0 0 0 * * ?");
+        const std::string expression = std::regex_replace(tmp, std::regex("@hourly"), "0 0 * * * ?");
 
         // Second, split on white-space. We expect six parts.
         std::regex split{ R"#(^\s*(.*?)\s+(.*?)\s+(.*?)\s+(.*?)\s+(.*?)\s+(.*?)\s*$)#",

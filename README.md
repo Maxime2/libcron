@@ -210,12 +210,12 @@ These special time specification tokens which replace the 5 initial time and dat
 
 |Token|Meaning
 | --- | --- |
-| @yearly | Run once a year, ie.  "0 0 1 1 *".
-| @annually | Run once a year, ie.  "0 0 1 1 *".
-| @monthly | Run once a month, ie. "0 0 1 * *".
-| @weekly | Run once a week, ie.  "0 0 * * 0".
-| @daily | Run once a day, ie.   "0 0 * * *".
-| @hourly | Run once an hour, ie. "0 * * * *".
+| @yearly | Run once a year, ie.  "0 0 0 1 1 *".
+| @annually | Run once a year, ie.  "0 0 0 1 1 *"".
+| @monthly | Run once a month, ie. "0 0 0 1 * *".
+| @weekly | Run once a week, ie.  "0 0 0 * * 0".
+| @daily | Run once a day, ie.   "0 0 0 * * ?".
+| @hourly | Run once an hour, ie. "0 0 * * * ?".
 	
 # Randomization
 

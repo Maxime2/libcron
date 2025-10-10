@@ -238,3 +238,12 @@ SCENARIO("Replacing text with numbers")
         REQUIRE(CronData::replace_string_name_with_numeric<libcron::Months>(s) == "1-12");
     }
 }
+
+SCENARIO("Parsing @ expressions works") {
+    REQUIRE(CronData::create("@yearly").is_valid());
+    REQUIRE(CronData::create("@annually").is_valid());
+    REQUIRE(CronData::create("@monthly").is_valid());
+    REQUIRE(CronData::create("@weekly").is_valid());
+    REQUIRE(CronData::create("@daily").is_valid());
+    REQUIRE(CronData::create("@hourly").is_valid());
+}
