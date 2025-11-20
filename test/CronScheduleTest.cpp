@@ -19,7 +19,7 @@ bool test(const std::string& schedule, system_clock::time_point from,
           const std::vector<system_clock::time_point>& expected_next)
 {
     auto c = CronData::create(schedule);
-    bool res = c.is_valid();
+    bool res = c->is_valid();
     if (res)
     {
         CronSchedule sched(c);
@@ -55,7 +55,7 @@ bool test(const std::string& schedule, system_clock::time_point from,
 bool test(const std::string& schedule, system_clock::time_point from, system_clock::time_point expected_next)
 {
     auto c = CronData::create(schedule);
-    bool res = c.is_valid();
+    bool res = c->is_valid();
     if (res)
     {
         CronSchedule sched(c);

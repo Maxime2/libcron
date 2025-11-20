@@ -104,11 +104,11 @@ namespace libcron
     bool Cron<ClockType, LockType>::add_schedule(std::string name, const std::string& schedule, Task::TaskFunction work)
     {
         auto cron = CronData::create(schedule);
-        bool res = cron.is_valid();
+        bool res = cron->is_valid();
         if (res)
         {
             tasks.lock_queue();
-            Task t{std::move(name), CronSchedule{std::move(cron)}, work };
+            Task t{std::move(name), CronSchedule{cron}, work };
             if (t.calculate_next(clock.now()))
             {
                 tasks.push(t);
@@ -135,10 +135,10 @@ namespace libcron
         {
             const auto& [name, schedule] = *it;
             auto cron = CronData::create(schedule);
-            is_valid = cron.is_valid();
+            is_valid = cron->is_valid();
             if (is_valid)
             {
-                Task t{std::move(name), CronSchedule{std::move(cron)}, work };
+                Task t{std::move(name), CronSchedule{cron}, work };
                 if (t.calculate_next(clock.now()))
                 {
                     tasks_to_add.push_back(std::move(t));

@@ -15,13 +15,17 @@ namespace libcron
             static const int NUMBER_OF_LONG_MONTHS = 7;
             static const libcron::Months months_with_31[NUMBER_OF_LONG_MONTHS];
 
-            static CronData create(const std::string& cron_expression);
+            static std::shared_ptr<CronData> create(const std::string& cron_expression);
 
-            CronData() = default;
+            CronData() = default; // Re-add for helper usage.
 
-            CronData(const CronData&) = default;
+            CronData(const CronData&) = delete;
 
-            CronData& operator=(const CronData&) = default;
+            CronData& operator=(const CronData&) = delete;
+
+            CronData(CronData&&) = default;
+
+            CronData& operator=(CronData&&) = default;
 
             bool is_valid() const
             {
@@ -129,7 +133,7 @@ namespace libcron
 
             static const std::vector<std::string> month_names;
             static const std::vector<std::string> day_names;
-            static std::unordered_map<std::string, CronData> cache;
+            static std::unordered_map<std::string, std::shared_ptr<CronData>> cache;
 
             template<typename T>
             void add_full_range(std::set<T>& set);

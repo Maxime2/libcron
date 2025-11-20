@@ -18,7 +18,7 @@ namespace libcron
     class CronSchedule
     {
         public:
-            explicit CronSchedule(CronData data)
+            explicit CronSchedule(std::shared_ptr<CronData> data)
                     : data(std::move(data))
             {
             }
@@ -50,7 +50,7 @@ namespace libcron
             }
 
         private:
-            CronData data;
+            std::shared_ptr<CronData> data;
     };
 
 }
