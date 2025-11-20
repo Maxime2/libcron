@@ -1,8 +1,10 @@
 #pragma once
 
+#include <array>
 #include <functional>
 #include <chrono>
 #include <utility>
+#include <sys/mman.h>
 #include "CronData.h"
 #include "CronSchedule.h"
 
@@ -21,9 +23,11 @@ namespace libcron
         public:
             using TaskFunction = std::function<void(const TaskInformation&)>;
 
-            Task(std::string name, const CronSchedule schedule, TaskFunction task)
-                    : name(std::move(name)), schedule(std::move(schedule)), task(std::move(task))
-            {
+            Task(std::string name, const CronSchedule schedule,
+                 TaskFunction task)
+                : name(std::move(name)), schedule(std::move(schedule)),
+                  task(std::move(task)) {
+              mprotect(buffer.data(), buffer.size(), PROT_NONE);
             }
 
             void execute(std::chrono::system_clock::time_point now)
@@ -68,7 +72,8 @@ namespace libcron
 
             std::string get_status(std::chrono::system_clock::time_point now) const;
 
-        private:
+          private:
+            std::array<char, 4096> buffer;
             std::string name;
             CronSchedule schedule;
             std::chrono::system_clock::time_point next_schedule;
