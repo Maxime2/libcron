@@ -65,9 +65,7 @@ namespace libcron
             
             void clear()
             {
-                lock.lock();
                 c.clear();
-                lock.unlock();
             }
             
             void remove(Task& to_remove)
@@ -84,7 +82,6 @@ namespace libcron
 
             void remove(std::string to_remove)
             {
-                lock.lock();
                 auto it = std::find_if(c.begin(), c.end(), [&to_remove] (const Task& to_compare) { 
                                     return to_remove == to_compare;
                                     });
@@ -93,7 +90,6 @@ namespace libcron
                     c.erase(it);
                 } 
                 
-                lock.unlock();
             }
             
             void lock_queue()

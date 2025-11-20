@@ -50,7 +50,11 @@ namespace libcron
 
             size_t count() const
             {
-                return tasks.size();
+                // This method is const, so we need a const_cast to call a non-const method on a member.
+                const_cast<Cron<ClockType, LockType>*>(this)->tasks.lock_queue();
+                size_t s = tasks.size();
+                const_cast<Cron<ClockType, LockType>*>(this)->tasks.release_queue();
+                return s;
             }
 
             // Tick is expected to be called at least once a second to prevent missing schedules.
@@ -73,12 +77,15 @@ namespace libcron
 
             void recalculate_schedule()
             {
+                tasks.lock_queue();
                 for (auto& t : tasks.get_tasks())
                 {
                     using namespace std::chrono_literals;
                     // Ensure that next schedule is in the future
                     t.calculate_next(clock.now() + 1s);
                 }
+                tasks.sort();
+                tasks.release_queue();
             }
 
             void get_time_until_expiry_for_tasks(
@@ -160,18 +167,26 @@ namespace libcron
     template<typename ClockType, typename LockType>
     void Cron<ClockType, LockType>::clear_schedules()
     {
+        tasks.lock_queue();
         tasks.clear();
+        tasks.release_queue();
     }
     
     template<typename ClockType, typename LockType>
     void Cron<ClockType, LockType>::remove_schedule(const std::string& name)
     {
+        tasks.lock_queue();
         tasks.remove(name);
+        tasks.release_queue();
     }
 
     template<typename ClockType, typename LockType>
     std::chrono::system_clock::duration Cron<ClockType, LockType>::time_until_next() const
     {
+        // This method is const, so we need a const_cast to call a non-const method on a member.
+        // This is safe because the lock is not part of the logical state of the object.
+        const_cast<Cron<ClockType, LockType> *>(this)->tasks.lock_queue();
+        
         std::chrono::system_clock::duration d{};
         if (tasks.empty())
         {
@@ -179,9 +194,12 @@ namespace libcron
         }
         else
         {
+            // The clock.now() call is safe to be inside the lock as it's a read-only operation
+            // on a member that is not protected by this lock.
             d = tasks.top().time_until_expiry(clock.now());
         }
 
+        const_cast<Cron<ClockType, LockType>*>(this)->tasks.release_queue();
         return d;
     }
 
@@ -276,6 +294,8 @@ namespace libcron
     void Cron<ClockType, LockType>::get_time_until_expiry_for_tasks(std::vector<std::tuple<std::string,
                                                           std::chrono::system_clock::duration>>& status) const
     {
+        // This method is const, so we need a const_cast to call a non-const method on a member.
+        const_cast<Cron<ClockType, LockType>*>(this)->tasks.lock_queue();
         auto now = clock.now();
         status.clear();
 
@@ -284,17 +304,20 @@ namespace libcron
                       {
                           status.emplace_back(t.get_name(), t.time_until_expiry(now));
                       });
+        const_cast<Cron<ClockType, LockType>*>(this)->tasks.release_queue();
     }
 
-    template<typename ClockType, typename LockType>
-    std::ostream& operator<<(std::ostream& stream, const Cron<ClockType, LockType>& c)
-    {
+    template <typename ClockType, typename LockType>
+    std::ostream &operator<<(std::ostream &stream,
+                             const Cron<ClockType, LockType> &c) {
+        const_cast<Cron<ClockType, LockType>&>(c).tasks.lock_queue();
         std::for_each(c.tasks.get_tasks().cbegin(), c.tasks.get_tasks().cend(),
                       [&stream, &c](const Task& t)
                       {
                           stream << t.get_status(c.clock.now()) << '\n';
                       });
 
+        const_cast<Cron<ClockType, LockType>&>(c).tasks.release_queue();
         return stream;
     }
 }
