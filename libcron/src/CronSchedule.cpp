@@ -1,4 +1,5 @@
 #include "libcron/CronSchedule.h"
+#include <limits>
 #include <tuple>
 
 using namespace std::chrono;
@@ -13,7 +14,7 @@ namespace libcron
         auto curr = from;
 
         bool done = false;
-        auto max_iterations = uint16_t{31622400}; // max number of seconds in a year
+        auto max_iterations = std::numeric_limits<uint32_t>::max();
 
         while (!done && --max_iterations > 0)
         {
