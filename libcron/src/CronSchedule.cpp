@@ -13,7 +13,7 @@ namespace libcron
         auto curr = from;
 
         bool done = false;
-        auto max_iterations = std::numeric_limits<uint16_t>::max();
+        auto max_iterations = uint16_t{31622400}; // max number of seconds in a year
 
         while (!done && --max_iterations > 0)
         {
@@ -76,7 +76,19 @@ namespace libcron
                 }
                 else
                 {
-                    done = true;
+                    // If all date/time components are valid, we have found a potential match.
+                    // However, if we are still on the first iteration and haven't advanced the
+                    // time yet (i.e., curr is the same as the initial 'from' time), it means
+                    // we've matched the starting time. We must advance by one second to find
+                    // the *next* schedule and avoid an infinite loop or returning a past time.
+                    if (curr == from)
+                    {
+                        curr += seconds{1};
+                    }
+                    else
+                    {
+                        done = true;
+                    }
                 }
             }
         }
@@ -89,7 +101,7 @@ namespace libcron
         // By discarding fraction seconds in the scheduled time,
         //  the `tick()` within the same second will never be earlier than schedule time,
         //  and the task will trigger in that `tick()`.
-        curr -= curr.time_since_epoch() % seconds{1};
+        curr = date::floor<seconds>(curr);
 
         return std::make_tuple(max_iterations > 0, curr);
     }
