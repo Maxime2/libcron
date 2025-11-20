@@ -27,7 +27,7 @@ namespace libcron
                  TaskFunction task)
                 : name(std::move(name)), schedule(std::move(schedule)),
                   task(std::move(task)) {
-              mprotect(buffer.data(), buffer.size(), PROT_NONE);
+              mprotect(buffer.data(), 4096, PROT_NONE);
             }
 
             void execute(std::chrono::system_clock::time_point now)
@@ -73,7 +73,7 @@ namespace libcron
             std::string get_status(std::chrono::system_clock::time_point now) const;
 
           private:
-            std::array<char, 4096> buffer;
+            std::array<char, 8192> buffer;
             std::string name;
             CronSchedule schedule;
             std::chrono::system_clock::time_point next_schedule;
