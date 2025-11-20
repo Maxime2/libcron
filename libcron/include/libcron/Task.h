@@ -23,7 +23,7 @@ namespace libcron
         public:
             using TaskFunction = std::function<void(const TaskInformation&)>;
 
-            Task(std::string name, const CronSchedule schedule,
+            Task(std::string name, CronSchedule schedule,
                  TaskFunction task)
                 : name(std::move(name)), schedule(std::move(schedule)),
                   task(std::move(task)) {

@@ -108,7 +108,7 @@ namespace libcron
         if (res)
         {
             tasks.lock_queue();
-            Task t{std::move(name), CronSchedule{cron}, work };
+            Task t{std::move(name), CronSchedule{std::move(cron)}, work };
             if (t.calculate_next(clock.now()))
             {
                 tasks.push(t);
@@ -138,7 +138,7 @@ namespace libcron
             is_valid = cron.is_valid();
             if (is_valid)
             {
-                Task t{std::move(name), CronSchedule{cron}, work };
+                Task t{std::move(name), CronSchedule{std::move(cron)}, work };
                 if (t.calculate_next(clock.now()))
                 {
                     tasks_to_add.push_back(std::move(t));
