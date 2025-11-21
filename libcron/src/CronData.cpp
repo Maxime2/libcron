@@ -139,6 +139,7 @@ namespace libcron
                      };
 
         return (dom == "?" || dow == "?")
+               || (dom == "*" && dow == "*")
                || check(dom, dow)
                || check(dow, dom);
     }

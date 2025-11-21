@@ -81,8 +81,8 @@ namespace libcron
                 for (auto& t : tasks.get_tasks())
                 {
                     using namespace std::chrono_literals;
-                    // Ensure that next schedule is in the future
-                    t.calculate_next(clock.now() + 1s);
+                    // Ensure that the next schedule is in the future
+                    t->calculate_next(clock.now() + 1s);
                 }
                 tasks.sort();
                 tasks.release_queue();
@@ -108,10 +108,10 @@ namespace libcron
         if (res)
         {
             tasks.lock_queue();
-            Task t{std::move(name), CronSchedule{cron}, work };
-            if (t.calculate_next(clock.now()))
+            auto t = std::make_unique<Task>(std::move(name), CronSchedule{cron}, work);
+            if (t->calculate_next(clock.now()))
             {
-                tasks.push(t);
+                tasks.push(std::move(t));
                 tasks.sort();
             }
             tasks.release_queue();
@@ -128,7 +128,7 @@ namespace libcron
         bool is_valid = true;
         std::tuple<bool, std::string, std::string> res{false, "", ""};
 
-        std::vector<Task> tasks_to_add;
+        std::vector<std::unique_ptr<Task>> tasks_to_add;
         tasks_to_add.reserve(name_schedule_map.size());
 
         for (auto it = name_schedule_map.begin(); is_valid && it != name_schedule_map.end(); ++it)
@@ -138,8 +138,8 @@ namespace libcron
             is_valid = cron->is_valid();
             if (is_valid)
             {
-                Task t{std::move(name), CronSchedule{cron}, work };
-                if (t.calculate_next(clock.now()))
+                auto t = std::make_unique<Task>(name, CronSchedule{cron}, work);
+                if (t->calculate_next(clock.now()))
                 {
                     tasks_to_add.push_back(std::move(t));
                 }
@@ -244,7 +244,7 @@ namespace libcron
                 // clock or timezone, and the new time is used immediately.
                 for (auto& t : tasks.get_tasks())
                 {
-                    t.calculate_next(now);
+                    t->calculate_next(now);
                 }
             }
             else
@@ -300,9 +300,9 @@ namespace libcron
         status.clear();
 
         std::for_each(tasks.get_tasks().cbegin(), tasks.get_tasks().cend(),
-                      [&status, &now](const Task& t)
+                      [&status, &now](const auto& t)
                       {
-                          status.emplace_back(t.get_name(), t.time_until_expiry(now));
+                          status.emplace_back(t->get_name(), t->time_until_expiry(now));
                       });
         const_cast<Cron<ClockType, LockType>*>(this)->tasks.release_queue();
     }
@@ -312,9 +312,9 @@ namespace libcron
                              const Cron<ClockType, LockType> &c) {
         const_cast<Cron<ClockType, LockType>&>(c).tasks.lock_queue();
         std::for_each(c.tasks.get_tasks().cbegin(), c.tasks.get_tasks().cend(),
-                      [&stream, &c](const Task& t)
+                      [&stream, &c](const auto& t)
                       {
-                          stream << t.get_status(c.clock.now()) << '\n';
+                          stream << t->get_status(c.clock.now()) << '\n';
                       });
 
         const_cast<Cron<ClockType, LockType>&>(c).tasks.release_queue();

@@ -78,18 +78,7 @@ namespace libcron
                 else
                 {
                     // If all date/time components are valid, we have found a potential match.
-                    // However, if we are still on the first iteration and haven't advanced the
-                    // time yet (i.e., curr is the same as the initial 'from' time), it means
-                    // we've matched the starting time. We must advance by one second to find
-                    // the *next* schedule and avoid an infinite loop or returning a past time.
-                    if (curr == from)
-                    {
-                        curr += seconds{1};
-                    }
-                    else
-                    {
-                        done = true;
-                    }
+                    done = true;
                 }
             }
         }
