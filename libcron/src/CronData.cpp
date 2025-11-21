@@ -46,8 +46,8 @@ namespace libcron
         const std::string expression = std::regex_replace(tmp, std::regex("@hourly"), "0 0 * * * ?");
 
         // Second, split on white-space. We expect six parts.
-        std::regex split{ R"#(^\s*(.*?)\s+(.*?)\s+(.*?)\s+(.*?)\s+(.*?)\s+(.*?)\s*$)#",
-                          std::regex_constants::ECMAScript };
+        static const std::regex split{ R"#(^\s*(.*?)\s+(.*?)\s+(.*?)\s+(.*?)\s+(.*?)\s+(.*?)\s*$)#",
+                                       std::regex_constants::ECMAScript | std::regex_constants::optimize };
 
         std::smatch match;
 
