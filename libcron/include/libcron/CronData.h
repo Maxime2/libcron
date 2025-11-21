@@ -159,7 +159,7 @@ namespace libcron
         // Replace each found name with the corresponding value.
         for (const auto& name : names)
         {
-            std::regex m(name, std::regex_constants::ECMAScript | std::regex_constants::icase);
+            const std::regex m(name, std::regex_constants::ECMAScript | std::regex_constants::icase);
 
             for (auto& part : parts)
             {
@@ -194,9 +194,9 @@ namespace libcron
     {
         bool res = false;
 
-        auto value_range = R"#((\d+)-(\d+))#";
+        static const auto value_range = R"#((\d+)-(\d+))#";
 
-        std::regex range(value_range, std::regex_constants::ECMAScript);
+        static const std::regex range(value_range, std::regex_constants::ECMAScript | std::regex_constants::optimize);
 
         std::smatch match;
 
@@ -221,9 +221,9 @@ namespace libcron
     {
         bool res = false;
 
-        auto value_range = R"#((\d+|\*)/(\d+))#";
+        static const auto value_range = R"#((\d+|\*)/(\d+))#";
 
-        std::regex range(value_range, std::regex_constants::ECMAScript);
+        static const std::regex range(value_range, std::regex_constants::ECMAScript | std::regex_constants::optimize);
 
         std::smatch match;
 
