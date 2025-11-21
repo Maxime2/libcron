@@ -23,9 +23,9 @@ namespace libcron
         public:
             using TaskFunction = std::function<void(const TaskInformation&)>;
 
-            Task(std::string name, CronSchedule schedule,
+            Task(std::string name, std::shared_ptr<CronData> data,
                  TaskFunction task)
-                : name(std::move(name)), schedule(std::move(schedule)),
+                : name(std::move(name)), schedule(data),
                   task(std::move(task)) {
               mprotect(buffer.data(), 4096, PROT_NONE);
             }

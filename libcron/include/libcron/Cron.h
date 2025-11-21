@@ -108,7 +108,7 @@ namespace libcron
         if (res)
         {
             tasks.lock_queue();
-            auto t = std::make_unique<Task>(std::move(name), CronSchedule{cron}, work);
+            auto t = std::make_unique<Task>(std::move(name), cron, work);
             if (t->calculate_next(clock.now()))
             {
                 tasks.push(std::move(t));
@@ -138,7 +138,7 @@ namespace libcron
             is_valid = cron->is_valid();
             if (is_valid)
             {
-                auto t = std::make_unique<Task>(name, CronSchedule{cron}, work);
+                auto t = std::make_unique<Task>(name, cron, work);
                 if (t->calculate_next(clock.now()))
                 {
                     tasks_to_add.push_back(std::move(t));
