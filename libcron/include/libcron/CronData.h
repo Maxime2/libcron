@@ -23,9 +23,9 @@ namespace libcron
 
             CronData& operator=(const CronData&) = delete;
 
-            CronData(CronData&&) = default;
+            CronData(CronData&&) = delete;
 
-            CronData& operator=(CronData&&) = default;
+            CronData& operator=(CronData&&) = delete;
 
             bool is_valid() const
             {
