@@ -38,12 +38,19 @@ namespace libcron
     {
         // First, check for "convenience scheduling" using @yearly, @annually,
         // @monthly, @weekly, @daily or @hourly.
-        std::string tmp = std::regex_replace(cron_expression, std::regex("@yearly"), "0 0 0 1 1 *");
-        tmp = std::regex_replace(tmp, std::regex("@annually"), "0 0 0 1 1 *");
-        tmp = std::regex_replace(tmp, std::regex("@monthly"), "0 0 0 1 * *");
-        tmp = std::regex_replace(tmp, std::regex("@weekly"), "0 0 0 * * 0");
-        tmp = std::regex_replace(tmp, std::regex("@daily"), "0 0 0 * * ?");
-        const std::string expression = std::regex_replace(tmp, std::regex("@hourly"), "0 0 * * * ?");
+        static const std::regex re_yearly("@yearly");
+        static const std::regex re_annually("@annually");
+        static const std::regex re_monthly("@monthly");
+        static const std::regex re_weekly("@weekly");
+        static const std::regex re_daily("@daily");
+        static const std::regex re_hourly("@hourly");
+
+        std::string tmp = std::regex_replace(cron_expression, re_yearly, "0 0 0 1 1 *");
+        tmp = std::regex_replace(tmp, re_annually, "0 0 0 1 1 *");
+        tmp = std::regex_replace(tmp, re_monthly, "0 0 0 1 * *");
+        tmp = std::regex_replace(tmp, re_weekly, "0 0 0 * * 0");
+        tmp = std::regex_replace(tmp, re_daily, "0 0 0 * * ?");
+        const std::string expression = std::regex_replace(tmp, re_hourly, "0 0 * * * ?");
 
         // Second, split on white-space. We expect six parts.
         static const std::regex split{ R"#(^\s*(.*?)\s+(.*?)\s+(.*?)\s+(.*?)\s+(.*?)\s+(.*?)\s*$)#",
@@ -64,14 +71,11 @@ namespace libcron
         }
     }
 
-    std::vector<std::string> CronData::split(const std::string& s, char token)
+    std::vector<std::string> CronData::split(const std::string& s)
     {
         std::vector<std::string> res;
 
-        std::string r = "[";
-        r += token;
-        r += "]";
-        std::regex splitter{ r, std::regex_constants::ECMAScript };
+        static const std::regex splitter{ ",", std::regex_constants::ECMAScript | std::regex_constants::optimize };
 
         std::copy(std::sregex_token_iterator(s.begin(), s.end(), splitter, -1),
                   std::sregex_token_iterator(),

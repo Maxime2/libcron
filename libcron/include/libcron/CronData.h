@@ -113,7 +113,7 @@ namespace libcron
             template<typename T>
             static bool get_step(const std::string& s, uint8_t& start, uint8_t& step);
 
-            std::vector<std::string> split(const std::string& s, char token);
+            std::vector<std::string> split(const std::string& s);
 
             static bool is_number(const std::string& s);
 
@@ -142,7 +142,7 @@ namespace libcron
     template<typename T>
     bool CronData::validate_numeric(const std::string& s, std::set<T>& numbers)
     {
-        std::vector<std::string> parts = split(s, ',');
+        std::vector<std::string> parts = split(s);
 
         return process_parts(parts, numbers);
     }
@@ -152,7 +152,7 @@ namespace libcron
                                     std::set<T>& numbers,
                                     const std::vector<std::string>& names)
     {
-        std::vector<std::string> parts = split(s, ',');
+        std::vector<std::string> parts = split(s);
 
         auto value_of_first_name = value_of(T::First);
 
