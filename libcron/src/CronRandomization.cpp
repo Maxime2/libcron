@@ -83,8 +83,7 @@ namespace libcron
             if (selected_value == -1)
             {
                 // Month is not specific, get the range.
-                CronData cr;
-                res &= cr.convert_from_string_range_to_number_range<Months>(all_sections[5].str(), month_range);
+                res &= CronData::convert_from_string_range_to_number_range<Months>(all_sections[5].str(), month_range);
             }
             else
             {
