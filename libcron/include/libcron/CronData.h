@@ -3,8 +3,10 @@
 #include <set>
 #include <regex>
 #include <string>
+#include <array>
 #include <vector>
 #include <unordered_map>
+#include <sys/mman.h>
 #include <libcron/TimeTypes.h>
 
 namespace libcron
@@ -17,7 +19,12 @@ namespace libcron
 
             static std::shared_ptr<CronData> create(const std::string& cron_expression);
 
-            CronData() = default; // Re-add for helper usage.
+            // CronData() = default; // Re-add for helper usage.
+            CronData() { mprotect(buffer.data(), 4096, PROT_NONE); }
+
+            ~CronData() {
+              mprotect(buffer.data(), 4096, PROT_READ | PROT_WRITE);
+            }
 
             CronData(const CronData&) = delete;
 
@@ -122,6 +129,8 @@ namespace libcron
             bool validate_date_vs_months() const;
 
             bool check_dom_vs_dow(const std::string& dom, const std::string& dow) const;
+
+            std::array<char, 8192> buffer;
 
             std::set<Seconds> seconds{};
             std::set<Minutes> minutes{};
