@@ -30,6 +30,10 @@ namespace libcron
               mprotect(buffer.data(), 4096, PROT_NONE);
             }
 
+            ~Task() {
+              mprotect(buffer.data(), 4096, PROT_READ | PROT_WRITE);
+            }
+
             void execute(std::chrono::system_clock::time_point now)
             {
                 // Next Schedule is still the current schedule, calculate delay (actual execution - planned execution)
